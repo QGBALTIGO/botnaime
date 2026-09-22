@@ -1,1228 +1,631 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>QG BALTIGO</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="description" content="Baltigo Offline: baixe animes, séries e filmes pelo Telegram e assista sem internet, onde quiser." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:title" content="Baltigo Offline — Baixe uma vez. Assista onde quiser." />
+  <meta property="og:description" content="Mais de 155 mil episódios e conteúdos, qualidade máxima disponível, atualizações rápidas e acesso pelo Telegram." />
+  <title>Baltigo Offline — Baixe uma vez. Assista onde quiser.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
   <style>
-    :root{
-      --bg:#0c0c10;
-      --bg2:#16161c;
-      --card:#15151c;
-      --card2:#111116;
-      --text:#fff;
-      --muted:#b9b9c7;
-      --line:rgba(255,255,255,.08);
-      --line-strong:rgba(255,255,255,.14);
-      --accent:#ff7a00;
-      --accent-2:#ff9a3b;
-      --shadow:0 10px 28px rgba(0,0,0,.22);
-      --radius:20px;
-      --radius-sm:12px;
-      --max:1400px;
-      --topbar-h:72px;
+    :root {
+      --bg: #050505;
+      --bg-soft: #0a0a0b;
+      --surface: #101012;
+      --surface-2: #151518;
+      --text: #f7f7f8;
+      --muted: #a7a7ad;
+      --line: rgba(255,255,255,.09);
+      --red: #ff233f;
+      --red-2: #c80825;
+      --red-soft: rgba(255,35,63,.12);
+      --gold: #ffc857;
+      --green: #4ade80;
+      --shadow: 0 24px 90px rgba(0,0,0,.55);
+      --radius: 24px;
+      --max: 1180px;
     }
 
-    *{box-sizing:border-box}
-    html,body{
-      margin:0;
-      padding:0;
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      margin: 0;
+      color: var(--text);
       background:
-        radial-gradient(circle at top, rgba(55,80,145,.14), transparent 24%),
-        linear-gradient(180deg, #0b0b0f 0%, #0c0c10 100%);
-      color:var(--text);
-      font-family: Inter, Arial, Helvetica, sans-serif;
-      min-height:100%;
-      overscroll-behavior-y:none;
+        radial-gradient(circle at 12% -10%, rgba(255,35,63,.18), transparent 30%),
+        radial-gradient(circle at 92% 10%, rgba(255,35,63,.08), transparent 24%),
+        var(--bg);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .17;
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: linear-gradient(to bottom, #000, transparent 70%);
+      z-index: -1;
     }
 
-    body{
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    img { max-width: 100%; }
+    .container { width: min(var(--max), calc(100% - 40px)); margin-inline: auto; }
+    .section { padding: 96px 0; position: relative; }
+    .section-kicker { color: #ff697d; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .section-title { font-family: Sora, Inter, sans-serif; font-size: clamp(32px, 5vw, 58px); line-height: 1.02; letter-spacing: -.04em; margin: 12px 0 16px; }
+    .section-copy { color: var(--muted); font-size: 17px; line-height: 1.7; max-width: 720px; }
+
+    .announcement {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffdce1;
+      background: linear-gradient(90deg, #7b0719, #b70a27 45%, #7b0719);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      text-align: center;
     }
 
-    a{text-decoration:none;color:inherit}
-    button,input{font:inherit}
-    img{display:block}
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      background: rgba(5,5,5,.76);
+      backdrop-filter: blur(18px);
+    }
+    nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-family: Sora, Inter, sans-serif; font-weight: 800; letter-spacing: -.04em; font-size: 20px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(145deg, var(--red), #8c061c); box-shadow: 0 0 28px rgba(255,35,63,.32); font-size: 17px; }
+    .brand span:last-child em { font-style: normal; color: var(--red); }
+    .nav-links { display: flex; align-items: center; gap: 26px; color: #c7c7cc; font-size: 14px; font-weight: 700; }
+    .nav-links a:hover { color: white; }
 
-    .shell{min-height:100vh}
-    .topbar{
-      position:sticky; top:0; z-index:100;
-      display:flex; align-items:center; justify-content:space-between; gap:18px;
-      min-height:var(--topbar-h);
-      padding:12px 18px;
-      background:rgba(10,10,14,.82);
-      border-bottom:1px solid var(--line);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+    .btn {
+      min-height: 50px;
+      padding: 0 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
     }
-    .top-left{display:flex; align-items:center; gap:20px; min-width:0}
-    .brand{
-      font-size:26px; font-weight:900; letter-spacing:-1px; white-space:nowrap; cursor:pointer; user-select:none;
-    }
-    .brand span{color:var(--accent)}
-    .nav{
-      display:flex; align-items:center; gap:14px; flex-wrap:wrap; min-width:0;
-      overflow:auto hidden; scrollbar-width:none;
-    }
-    .nav::-webkit-scrollbar{display:none}
-    .nav a,.nav button{
-      background:none; border:0; color:#ddd; cursor:pointer; font-size:14px; padding:6px 0; white-space:nowrap;
-    }
-    .nav a:hover,.nav button:hover{color:#fff}
-    .top-right{display:flex; align-items:center; gap:10px; min-width:0}
-    .search{
-      display:flex; align-items:center; gap:10px; width:min(360px, 42vw);
-      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
-      border-radius:999px; padding:10px 14px;
-    }
-    .search input{flex:1; background:transparent; border:0; outline:0; color:#fff; font-size:14px; min-width:0}
-    .search input::placeholder{color:#a9a9b3}
-    .search-icon{opacity:.8}
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--red), var(--red-2)); box-shadow: 0 16px 42px rgba(255,35,63,.22); color: white; }
+    .btn-primary:hover { box-shadow: 0 18px 52px rgba(255,35,63,.34); }
+    .btn-secondary { background: rgba(255,255,255,.04); border-color: var(--line); color: white; }
+    .btn-sm { min-height: 42px; padding: 0 17px; border-radius: 12px; font-size: 13px; }
 
-    .hero{
-      position:relative; height:480px; min-height:480px; max-height:480px;
-      overflow:hidden; display:flex; align-items:flex-end; padding:0 24px 26px;
-      border-bottom:1px solid var(--line);
-    }
-    .hero::before{
-      content:""; position:absolute; inset:0;
-      background:
-        linear-gradient(90deg, rgba(0,0,0,.95) 0%, rgba(0,0,0,.82) 32%, rgba(0,0,0,.36) 60%, rgba(0,0,0,.10) 100%),
-        linear-gradient(180deg, rgba(0,0,0,.12) 0%, rgba(0,0,0,.70) 100%);
-      z-index:1;
-      pointer-events:none;
-    }
-    .hero-bg{
-      position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover; object-position:center center; z-index:0; background:#111;
-      transform:scale(1.02);
-    }
-    .hero-content{position:relative; z-index:2; max-width:660px; width:100%}
-    .hero-kicker{
-      display:inline-block; padding:6px 10px; border-radius:999px;
-      background:rgba(255,122,0,.15); border:1px solid rgba(255,122,0,.25);
-      color:#ffbc7b; font-size:12px; font-weight:700; margin-bottom:12px; letter-spacing:.4px;
-    }
-    .hero-title{
-      margin:0 0 12px; font-size:clamp(30px, 4.6vw, 58px); line-height:.95;
-      letter-spacing:-1.4px; max-width:760px;
-    }
-    .hero-meta{color:#d4d4db; font-size:15px; margin-bottom:14px}
-    .hero-desc{
-      color:#dfdfe6; font-size:15px; line-height:1.58; margin-bottom:18px;
-      display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; max-width:620px;
-    }
-    .actions{display:flex; gap:10px; flex-wrap:wrap}
-    .btn{
-      padding:14px 18px; min-height:48px; border-radius:14px; border:0; cursor:pointer; font-weight:800; transition:.16s ease;
-      display:inline-flex; align-items:center; justify-content:center;
-    }
-    .btn:hover{transform:translateY(-1px)}
-    .btn:active{transform:scale(.98)}
-    .btn-primary{background:var(--accent); color:#111}
-    .btn-secondary{background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.12)}
+    .hero { padding: 76px 0 56px; min-height: 760px; display: flex; align-items: center; }
+    .hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; gap: 54px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 999px; background: var(--red-soft); border: 1px solid rgba(255,35,63,.2); color: #ff8596; font-size: 13px; font-weight: 800; }
+    .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 0 rgba(255,35,63,.5); animation: pulse 1.8s infinite; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 9px rgba(255,35,63,0); } 100% { box-shadow: 0 0 0 0 rgba(255,35,63,0); } }
+    .hero h1 { font-family: Sora, Inter, sans-serif; font-size: clamp(48px, 7vw, 82px); line-height: .98; letter-spacing: -.055em; margin: 22px 0; max-width: 780px; }
+    .hero h1 .gradient { background: linear-gradient(90deg, #fff 5%, #ff8394 55%, var(--red) 100%); -webkit-background-clip: text; color: transparent; }
+    .hero-copy { color: #b9b9c0; max-width: 680px; font-size: clamp(17px, 2vw, 20px); line-height: 1.65; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .trust-row { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 25px; color: #d3d3d7; font-size: 13px; font-weight: 700; }
+    .trust-row span { display: inline-flex; align-items: center; gap: 6px; }
+    .trust-row i { font-style: normal; color: var(--green); }
 
-    .status-wrap{max-width:var(--max); margin:0 auto; padding:14px 18px 0}
-    .status{color:#aaa; font-size:13px; min-height:18px}
-    .content{max-width:var(--max); margin:0 auto; padding:8px 0 42px}
-    .section{padding:0 18px; margin-top:26px}
-    .section-head{
-      display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:14px; flex-wrap:wrap;
+    .device-stage { position: relative; min-height: 560px; display: grid; place-items: center; }
+    .device-glow { position: absolute; width: 82%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255,35,63,.22), transparent 65%); filter: blur(14px); }
+    .phone {
+      width: min(360px, 82vw);
+      min-height: 566px;
+      border-radius: 38px;
+      padding: 12px;
+      background: linear-gradient(155deg, #33343a, #09090a 50%, #24252a);
+      box-shadow: 0 46px 120px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.07);
+      transform: rotate(3deg);
+      position: relative;
+      z-index: 2;
     }
-    .section-title{margin:0; font-size:28px; letter-spacing:-1px}
-    .section-subtitle{color:var(--muted); font-size:13px}
+    .phone-screen { min-height: 542px; border-radius: 30px; overflow: hidden; position: relative; background: #08080a; border: 1px solid rgba(255,255,255,.06); }
+    .phone-top { height: 42px; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #bfc0c5; }
+    .notch { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 92px; height: 24px; border-radius: 20px; background: #000; }
+    .app-head { padding: 10px 18px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .app-title { font-weight: 900; font-size: 18px; }
+    .app-title b { color: var(--red); }
+    .search-pill { width: 34px; height: 34px; border-radius: 12px; background: #16161a; display: grid; place-items: center; }
+    .mock-cover { margin: 0 14px; height: 218px; border-radius: 22px; position: relative; overflow: hidden; background:
+      radial-gradient(circle at 72% 30%, rgba(255,255,255,.2), transparent 10%),
+      linear-gradient(135deg, #4a0714 0 26%, #0f1015 26% 43%, #bc0d2d 43% 54%, #191a22 54% 70%, #5d0a18 70% 100%);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .mock-cover::after { content: "BALTIGO\A OFFLINE"; white-space: pre; position: absolute; left: 18px; bottom: 18px; font: 800 29px/1 Sora, sans-serif; letter-spacing: -.05em; }
+    .quality { position: absolute; top: 14px; left: 14px; padding: 6px 9px; border-radius: 8px; background: rgba(0,0,0,.72); border: 1px solid rgba(255,255,255,.11); font-size: 10px; font-weight: 900; }
+    .offline-tag { position: absolute; right: 14px; top: 14px; padding: 6px 9px; border-radius: 8px; background: var(--red); font-size: 10px; font-weight: 900; }
+    .episode { margin: 18px; }
+    .episode small { color: #87878f; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; }
+    .episode h3 { margin: 6px 0 7px; font-size: 15px; }
+    .episode p { margin: 0; color: #8f9098; font-size: 11px; line-height: 1.5; }
+    .download-card { margin: 14px 18px; padding: 14px; border-radius: 16px; background: #121216; border: 1px solid rgba(255,255,255,.07); }
+    .download-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 10px; }
+    .bar { height: 7px; border-radius: 999px; background: #27272d; overflow: hidden; }
+    .bar span { display: block; height: 100%; width: 88%; border-radius: inherit; background: linear-gradient(90deg, #9f0922, var(--red)); position: relative; }
+    .bar span::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.38), transparent); transform: translateX(-100%); animation: shimmer 2s infinite; }
+    @keyframes shimmer { to { transform: translateX(100%); } }
+    .download-meta { margin-top: 8px; display: flex; justify-content: space-between; color: #85858d; font-size: 9px; }
+    .offline-ready { display: flex; align-items: center; gap: 8px; margin: 12px 18px 0; padding: 11px 13px; border-radius: 14px; color: #dfffe9; background: rgba(74,222,128,.08); border: 1px solid rgba(74,222,128,.18); font-size: 10px; font-weight: 800; }
 
-    .row-scroller{
-      display:flex;
-      gap:14px;
-      overflow-x:auto;
-      overflow-y:hidden;
-      padding:2px 2px 12px;
-      scroll-snap-type:x proximity;
-      -webkit-overflow-scrolling:touch;
-      scrollbar-width:none;
-    }
-    .row-scroller::-webkit-scrollbar{display:none}
+    .float-card { position: absolute; z-index: 3; padding: 14px 16px; border-radius: 16px; background: rgba(16,16,18,.88); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(16px); box-shadow: var(--shadow); font-size: 12px; font-weight: 800; }
+    .float-card small { display: block; color: #8d8e95; font-weight: 600; margin-top: 3px; }
+    .float-one { left: -10px; top: 120px; transform: rotate(-4deg); }
+    .float-two { right: -4px; bottom: 110px; transform: rotate(4deg); }
 
-    .grid{
-      display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:16px;
-    }
+    .stats { padding: 22px 0 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; background: rgba(255,255,255,.025); }
+    .stat { padding: 28px; border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: 0; }
+    .stat strong { display: block; font: 800 clamp(25px, 3vw, 37px)/1 Sora, sans-serif; letter-spacing: -.05em; }
+    .stat span { display: block; color: var(--muted); margin-top: 8px; font-size: 12px; line-height: 1.4; }
 
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden;
-      cursor:pointer; transition:.16s ease; box-shadow:none; min-width:0;
-      contain:content;
-    }
-    .card:hover{transform:translateY(-3px); border-color:rgba(255,122,0,.36)}
-    .card:active{transform:scale(.985)}
-    .card.card-row{
-      min-width:160px;
-      max-width:160px;
-      flex:0 0 160px;
-      scroll-snap-align:start;
-    }
-    .poster-wrap{position:relative; width:100%; aspect-ratio:2/3; overflow:hidden; background:#121218}
-    .poster{
-      width:100%; height:100%; object-fit:cover; background:#111;
-      transition:transform .18s ease;
-    }
-    .card:hover .poster{transform:scale(1.02)}
-    .poster-overlay{position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.78) 100%)}
-    .badge{
-      position:absolute; top:10px; left:10px; z-index:2; background:var(--accent); color:#111;
-      padding:6px 8px; border-radius:8px; font-size:11px; font-weight:900; letter-spacing:.4px;
-    }
-    .badge.badge-dub{background:#17c964; color:#08120b}
-    .badge.badge-leg{background:#1f6feb; color:#fff}
-    .card-body{padding:10px 10px 12px; min-width:0}
-    .card-title{
-      margin:0 0 5px; font-size:15px; line-height:1.35; min-height:40px;
-      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;
-    }
-    .card-sub{color:#aaa; font-size:12px; line-height:1.4; min-height:17px}
+    .usecases-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-top: 36px; }
+    .usecase { min-height: 190px; padding: 24px; border-radius: 22px; border: 1px solid var(--line); background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.018)); transition: transform .25s ease, border-color .25s ease; }
+    .usecase:hover { transform: translateY(-5px); border-color: rgba(255,35,63,.35); }
+    .usecase .emoji { font-size: 30px; }
+    .usecase h3 { font-size: 17px; margin: 22px 0 8px; }
+    .usecase p { color: var(--muted); font-size: 13px; line-height: 1.6; margin: 0; }
 
-    .pagination{
-      display:flex; justify-content:center; align-items:center; gap:10px;
-      margin:22px 0 4px; padding:0 18px; flex-wrap:wrap;
-    }
-    .page-chip{
-      background:#1b1b24; border:1px solid rgba(255,255,255,.08); color:#fff; min-width:42px; height:42px;
-      border-radius:12px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-weight:700;
-    }
-    .page-chip:hover{border-color:rgba(255,122,0,.45)}
-    .page-chip.active{background:var(--accent); color:#111; border-color:transparent}
-    .page-chip:disabled{opacity:.45; cursor:not-allowed}
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 36px; counter-reset: step; }
+    .step { counter-increment: step; padding: 28px; border-radius: 24px; background: #0d0d0f; border: 1px solid var(--line); position: relative; overflow: hidden; }
+    .step::before { content: "0" counter(step); position: absolute; right: 18px; top: 10px; font: 800 54px/1 Sora, sans-serif; color: rgba(255,255,255,.045); }
+    .step-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: var(--red-soft); color: var(--red); font-size: 21px; }
+    .step h3 { margin: 22px 0 8px; }
+    .step p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
-    .toolbar{
-      display:flex; justify-content:space-between; gap:12px; align-items:center;
-      flex-wrap:wrap; padding:0 18px; margin-top:8px;
-    }
-    .toolbar-left{
-      display:flex; gap:10px; flex-wrap:wrap; overflow-x:auto; max-width:100%;
-      scrollbar-width:none;
-    }
-    .toolbar-left::-webkit-scrollbar{display:none}
-    .pill{
-      background:#17171d; border:1px solid rgba(255,255,255,.08); color:#fff;
-      padding:10px 14px; border-radius:999px; cursor:pointer; white-space:nowrap; min-height:42px;
-    }
-    .pill:hover{border-color:rgba(255,122,0,.45)}
+    .benefits-wrap { margin-top: 36px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; }
+    .benefit-main, .benefit-stack > div { border-radius: 26px; border: 1px solid var(--line); background: linear-gradient(145deg, #111114, #09090b); }
+    .benefit-main { padding: 34px; min-height: 490px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; position: relative; }
+    .benefit-main::after { content: "∞"; position: absolute; right: -25px; bottom: -75px; color: rgba(255,35,63,.12); font: 800 260px/1 Sora, sans-serif; }
+    .benefit-icon { width: 50px; height: 50px; display: grid; place-items: center; border-radius: 16px; background: var(--red); font-size: 23px; box-shadow: 0 15px 40px rgba(255,35,63,.22); }
+    .benefit-main h3 { font: 800 34px/1.05 Sora, sans-serif; letter-spacing: -.04em; margin: 20px 0 12px; max-width: 520px; }
+    .benefit-main p { color: var(--muted); line-height: 1.7; max-width: 560px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 2; }
+    .chip { padding: 8px 11px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: #d0d0d4; font-size: 11px; font-weight: 800; }
+    .benefit-stack { display: grid; grid-template-rows: repeat(2, 1fr); gap: 18px; }
+    .benefit-stack > div { padding: 29px; }
+    .benefit-stack h3 { font-size: 21px; margin: 17px 0 8px; }
+    .benefit-stack p { color: var(--muted); font-size: 14px; line-height: 1.65; margin: 0; }
 
-    .page{padding:24px 18px}
-    .anime-layout{display:grid; grid-template-columns:300px 1fr; gap:24px; align-items:start}
-    .anime-cover{
-      width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:20px; background:#1a1a22;
-      box-shadow:none; border:1px solid rgba(255,255,255,.06);
-    }
-    .anime-title{margin:0 0 10px; font-size:42px; line-height:1; letter-spacing:-1.2px}
-    .meta-line{color:#cfcfd9; margin-bottom:16px; line-height:1.5}
-    .desc{color:#d7d7df; line-height:1.72; margin-bottom:18px; white-space:pre-wrap}
-    .info-grid{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; margin:20px 0 24px}
-    .info-box{
-      background:#14141b; border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:14px 16px;
-    }
-    .info-label{
-      font-size:12px; color:#aaa; text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px;
-    }
-    .info-value{color:#fff; line-height:1.5; word-break:break-word}
+    .pricing-section { background: linear-gradient(180deg, transparent, rgba(255,35,63,.035), transparent); }
+    .pricing-intro { display: flex; align-items: end; justify-content: space-between; gap: 28px; }
+    .pricing-note { max-width: 370px; padding: 13px 16px; border: 1px solid rgba(255,200,87,.2); background: rgba(255,200,87,.06); border-radius: 15px; color: #ffe6a9; font-size: 12px; line-height: 1.5; }
+    .plans { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; margin-top: 36px; align-items: stretch; }
+    .plan { padding: 24px 20px; border-radius: 24px; border: 1px solid var(--line); background: linear-gradient(160deg, #121215, #09090a); position: relative; display: flex; flex-direction: column; min-height: 520px; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+    .plan:hover { transform: translateY(-6px); border-color: rgba(255,35,63,.35); }
+    .plan.featured { border-color: rgba(255,35,63,.58); box-shadow: 0 24px 75px rgba(255,35,63,.12); }
+    .plan.lifetime { background: radial-gradient(circle at 70% 0, rgba(255,255,255,.08), transparent 35%), linear-gradient(160deg, #151519, #080809); }
+    .badge { position: absolute; top: -11px; left: 18px; padding: 6px 10px; border-radius: 999px; background: var(--red); color: white; font-size: 10px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+    .plan-tier { display: flex; justify-content: space-between; align-items: center; }
+    .tier-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: #1c1c20; font-size: 20px; }
+    .plan h3 { font: 800 20px/1 Sora, sans-serif; margin: 18px 0 5px; }
+    .plan-duration { color: var(--muted); font-size: 12px; }
+    .price { margin: 22px 0; display: flex; align-items: flex-end; gap: 4px; }
+    .price .currency { align-self: flex-start; color: #c2c2c8; font-size: 13px; margin-top: 7px; }
+    .price strong { font: 800 40px/1 Sora, sans-serif; letter-spacing: -.055em; }
+    .price small { color: #8f8f96; margin-bottom: 3px; font-size: 10px; }
+    .plan ul { list-style: none; padding: 0; margin: 4px 0 22px; display: grid; gap: 11px; flex: 1; }
+    .plan li { display: flex; align-items: flex-start; gap: 8px; color: #d6d6da; font-size: 12px; line-height: 1.45; }
+    .plan li::before { content: "✓"; color: var(--green); font-weight: 900; }
+    .plan li.no { color: #77777e; }
+    .plan li.no::before { content: "—"; color: #77777e; }
+    .plan .btn { width: 100%; }
+    .plan-foot { color: #6e6e74; font-size: 9px; text-align: center; margin-top: 10px; }
 
-    .episode-strip{
-      display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none;
-      -webkit-overflow-scrolling:touch;
-    }
-    .episode-strip::-webkit-scrollbar{display:none}
-    .ep-btn{
-      flex:0 0 auto;
-      min-width:92px;
-      border:1px solid rgba(255,255,255,.09); background:#191920; color:#fff;
-      border-radius:12px; padding:14px 12px; text-align:center; cursor:pointer; font-weight:700; transition:.16s ease;
-    }
-    .ep-btn:hover{
-      border-color:rgba(255,122,0,.55); background:#20202a; transform:translateY(-1px);
-    }
-    .ep-btn:active{transform:scale(.98)}
+    .coxinha { margin-top: 24px; padding: 22px 24px; border: 1px solid rgba(255,255,255,.08); border-radius: 22px; display: flex; align-items: center; justify-content: space-between; gap: 24px; background: linear-gradient(90deg, rgba(255,35,63,.11), rgba(255,255,255,.025)); }
+    .coxinha-copy { display: flex; gap: 16px; align-items: center; }
+    .coxinha-emoji { font-size: 38px; }
+    .coxinha strong { display: block; font-size: 18px; }
+    .coxinha span { color: var(--muted); font-size: 13px; line-height: 1.5; }
 
-    .continue-grid{display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:16px}
+    .compare { margin-top: 24px; overflow-x: auto; border: 1px solid var(--line); border-radius: 22px; background: #0b0b0d; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { padding: 17px 18px; text-align: center; border-bottom: 1px solid var(--line); font-size: 12px; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: white; font-size: 11px; letter-spacing: .02em; background: rgba(255,255,255,.025); }
+    td { color: #c4c4ca; }
+    tr:last-child td { border-bottom: 0; }
+    .yes { color: var(--green); font-weight: 900; }
+    .nope { color: #66666d; }
 
-    .player-wrap{
-      width:100%; max-width:1280px; margin:0 auto;
-      padding:20px 18px calc(100px + env(safe-area-inset-bottom, 0px));
-    }
-    .player-header{
-      display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:14px;
-    }
-    .player-title{margin:0 0 6px; font-size:30px; line-height:1.08; letter-spacing:-1px}
-    .player-sub{color:#bdbdca; font-size:14px}
-    .player-panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-      border:1px solid rgba(255,255,255,.06); border-radius:20px; box-shadow:none; overflow:hidden;
-    }
-    .video-box{
-      width:100%; aspect-ratio:16/9; background:#000;
-      position:relative;
-    }
-    video, iframe{width:100%; height:100%; display:block; background:#000; border:0}
-    .player-meta{margin-top:16px; display:grid; grid-template-columns:1.2fr .8fr; gap:14px}
-    .meta-card{
-      background:#14141b; border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:18px;
-    }
-    .meta-label{
-      font-size:12px; text-transform:uppercase; letter-spacing:.7px; color:#9f9fad; margin-bottom:10px;
-    }
-    .meta-text{color:#ececf1; line-height:1.65; font-size:15px}
+    .faq { max-width: 900px; margin: 38px auto 0; display: grid; gap: 10px; }
+    .faq-item { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: rgba(255,255,255,.022); }
+    .faq-q { width: 100%; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 18px; color: white; background: transparent; border: 0; text-align: left; font: 700 14px/1.4 Inter, sans-serif; cursor: pointer; }
+    .faq-q span:last-child { width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 10px; background: rgba(255,255,255,.05); transition: transform .25s ease; }
+    .faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+    .faq-a > div { overflow: hidden; }
+    .faq-a p { margin: 0; padding: 0 22px 20px; color: var(--muted); line-height: 1.7; font-size: 13px; }
+    .faq-item.open .faq-a { grid-template-rows: 1fr; }
+    .faq-item.open .faq-q span:last-child { transform: rotate(45deg); }
 
-    .controls-card{
-      margin-top:16px; background:rgba(20,20,27,.96); border:1px solid rgba(255,255,255,.06);
-      border-radius:18px; padding:16px;
-      position:sticky;
-      bottom:calc(8px + env(safe-area-inset-bottom, 0px));
-      z-index:30;
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
+    .final-cta { padding: 44px; border-radius: 32px; border: 1px solid rgba(255,35,63,.24); background:
+      radial-gradient(circle at 80% 30%, rgba(255,35,63,.2), transparent 27%),
+      linear-gradient(135deg, #151014, #080809 62%);
+      display: flex; align-items: center; justify-content: space-between; gap: 34px; overflow: hidden; position: relative;
     }
-    .controls-title{
-      font-size:12px; text-transform:uppercase; letter-spacing:.7px; color:#9f9fad; margin-bottom:10px;
-      text-align:center;
-    }
-    .quality-row,.nav-ep{
-      display:flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center;
-    }
-    .nav-ep{margin-top:14px}
-    .chip{
-      border:1px solid rgba(255,255,255,.12); background:#1a1a22; color:#fff;
-      padding:12px 14px; border-radius:14px; cursor:pointer; transition:.16s ease; font-weight:700;
-      min-height:46px; display:inline-flex; align-items:center; justify-content:center;
-    }
-    .chip:hover{transform:translateY(-1px); border-color:rgba(255,122,0,.45); background:#20202a}
-    .chip.active{background:#ff7a00; color:#111; border-color:transparent}
-    .chip.ghost{background:transparent}
-    .quality-row .chip{
-      min-width:92px;
-      max-width:160px;
-      flex:0 1 120px;
-    }
-    .player-actions{
-      display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-top:18px;
-    }
-    .player-breadcrumb{color:#9f9fad; font-size:14px}
-    .countdown{font-weight:700; color:#ffb36e}
+    .final-cta h2 { font: 800 clamp(30px, 5vw, 54px)/1.02 Sora, sans-serif; letter-spacing: -.045em; margin: 0 0 12px; max-width: 760px; }
+    .final-cta p { margin: 0; color: var(--muted); line-height: 1.65; max-width: 650px; }
+    .final-actions { display: grid; gap: 10px; min-width: 230px; }
 
-    .empty-state{
-      max-width:800px; margin:40px auto; padding:28px; background:#13131a;
-      border:1px solid rgba(255,255,255,.06); border-radius:20px; text-align:center; color:#d8d8de;
-    }
+    footer { padding: 38px 0 50px; border-top: 1px solid var(--line); color: #7d7d84; font-size: 11px; }
+    .footer-grid { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; }
+    .legal { max-width: 750px; line-height: 1.65; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 14px; justify-content: flex-end; }
 
-    .skeleton-row{
-      display:flex; gap:14px; overflow:hidden; padding-bottom:12px;
-    }
-    .skeleton-card{
-      flex:0 0 160px;
-      min-width:160px;
-      border-radius:18px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.05);
-      background:#15151c;
-    }
-    .skeleton-poster{
-      aspect-ratio:2/3;
-      background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.08), rgba(255,255,255,.04));
-      background-size:200% 100%;
-      animation:shine 1.2s linear infinite;
-    }
-    .skeleton-lines{padding:10px}
-    .skeleton-line{
-      height:12px; border-radius:999px; margin-bottom:8px;
-      background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.08), rgba(255,255,255,.04));
-      background-size:200% 100%;
-      animation:shine 1.2s linear infinite;
-    }
-    .skeleton-line.short{width:58%}
-    @keyframes shine{
-      0%{background-position:200% 0}
-      100%{background-position:-200% 0}
-    }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 140%); width: min(470px, calc(100% - 28px)); padding: 15px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.12); background: rgba(18,18,21,.96); box-shadow: var(--shadow); z-index: 100; transition: transform .3s ease; display: flex; gap: 11px; align-items: flex-start; }
+    .toast.show { transform: translate(-50%, 0); }
+    .toast strong { font-size: 13px; display: block; margin-bottom: 3px; }
+    .toast span { color: var(--muted); font-size: 11px; line-height: 1.4; }
 
-    .footer-space{height:40px}
-
-    @media (max-width:1200px){
-      .grid,.continue-grid{grid-template-columns:repeat(4, minmax(0, 1fr))}
-      .anime-layout{grid-template-columns:260px 1fr}
+    @media (max-width: 1050px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero { padding-top: 62px; }
+      .hero-copy { max-width: 760px; }
+      .device-stage { min-height: 610px; }
+      .float-one { left: 12%; }
+      .float-two { right: 12%; }
+      .plans { grid-template-columns: repeat(2,1fr); gap: 16px; }
+      .usecases-grid { grid-template-columns: repeat(2,1fr); }
+      .benefits-wrap { grid-template-columns: 1fr; }
+      .benefit-stack { grid-template-columns: repeat(2,1fr); grid-template-rows: auto; }
+      .pricing-intro { align-items: flex-start; flex-direction: column; }
     }
-
-    @media (max-width:980px){
-      .grid,.continue-grid{grid-template-columns:repeat(3, minmax(0, 1fr))}
-      .anime-layout{grid-template-columns:1fr}
-      .hero{height:420px; min-height:420px; max-height:420px}
-      .hero-title{font-size:40px}
-      .search{width:min(320px, 46vw)}
-      .player-meta{grid-template-columns:1fr}
+    @media (max-width: 780px) {
+      .nav-links a:not(.nav-cta) { display: none; }
+      .section { padding: 72px 0; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .stat:nth-child(2) { border-right: 0; }
+      .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .steps { grid-template-columns: 1fr; }
+      .final-cta { align-items: flex-start; flex-direction: column; padding: 32px 26px; }
+      .final-actions { width: 100%; min-width: 0; grid-template-columns: 1fr 1fr; }
+      .footer-grid { flex-direction: column; }
+      .footer-links { justify-content: flex-start; }
     }
-
-    @media (max-width:720px){
-      :root{ --topbar-h: auto; }
-      .topbar{flex-direction:column; align-items:stretch; gap:12px}
-      .top-left{flex-direction:column; align-items:flex-start; gap:10px}
-      .nav{gap:12px; width:100%}
-      .top-right{width:100%}
-      .search{width:100%}
-      .grid,.continue-grid{display:none}
-      .hero{
-        height:340px; min-height:340px; max-height:340px;
-        padding:0 18px 20px;
-      }
-      .hero::before{
-        background:
-          linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,.86) 90%),
-          linear-gradient(90deg, rgba(0,0,0,.74) 0%, rgba(0,0,0,.34) 100%);
-      }
-      .hero-desc{
-        -webkit-line-clamp:3;
-        font-size:14px;
-        margin-bottom:16px;
-      }
-      .section,.page,.player-wrap{padding-left:18px; padding-right:18px}
-      .status-wrap,.toolbar{padding-left:18px; padding-right:18px}
-      .anime-title{font-size:34px}
-      .info-grid{grid-template-columns:1fr}
-      .card.card-row{min-width:146px; max-width:146px; flex-basis:146px}
-      .poster-wrap{aspect-ratio:2/3}
-      .controls-card{
-        position:sticky;
-        bottom:8px;
-      }
-      .nav-ep .chip,
-      .quality-row .chip{
-        flex:1 1 calc(50% - 8px);
-      }
+    @media (max-width: 590px) {
+      .container { width: min(var(--max), calc(100% - 26px)); }
+      .announcement { font-size: 11px; }
+      nav { min-height: 64px; }
+      .nav-cta { display: none; }
+      .hero { padding: 45px 0 28px; min-height: 0; }
+      .hero h1 { font-size: clamp(43px, 13vw, 62px); }
+      .hero-actions .btn { width: 100%; }
+      .trust-row { gap: 10px 14px; }
+      .device-stage { min-height: 540px; transform: scale(.92); margin: -20px 0; }
+      .float-one { left: -4px; top: 90px; }
+      .float-two { right: -4px; bottom: 80px; }
+      .stats-grid { border-radius: 18px; }
+      .stat { padding: 20px; }
+      .usecases-grid { grid-template-columns: 1fr; }
+      .usecase { min-height: 0; }
+      .benefit-main { min-height: 430px; padding: 26px; }
+      .benefit-stack { grid-template-columns: 1fr; }
+      .plans { grid-template-columns: 1fr; }
+      .plan { min-height: 0; padding: 25px 22px; }
+      .coxinha { align-items: flex-start; flex-direction: column; }
+      .coxinha .btn { width: 100%; }
+      .final-actions { grid-template-columns: 1fr; }
     }
-
-    @media (max-width:520px){
-      .hero-title{font-size:30px}
-      .section-title{font-size:24px}
-      .brand{font-size:24px}
-      .btn{flex:1 1 auto}
-      .card.card-row{min-width:132px; max-width:132px; flex-basis:132px}
-      .player-title{font-size:24px}
-      .chip{padding:11px 12px}
-      .ep-btn{min-width:84px; padding:13px 10px}
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      *, *::before, *::after{
-        animation:none !important;
-        transition:none !important;
-        scroll-behavior:auto !important;
-      }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <header class="topbar">
-      <div class="top-left">
-        <div class="brand" onclick="goHome()">QG <span>BALTIGO</span></div>
-        <nav class="nav">
-          <a href="#" onclick="goHome(); return false;">Início</a>
-          <a href="#" onclick="goSection('em_lancamento'); return false;">Em lançamento</a>
-          <a href="#" onclick="goSection('atualizados'); return false;">Atualizados</a>
-          <a href="#" onclick="goSection('top'); return false;">Top</a>
-          <a href="#" onclick="goSection('legendados'); return false;">Legendados</a>
-          <a href="#" onclick="goSection('dublados'); return false;">Dublados</a>
-        </nav>
-      </div>
-      <div class="top-right">
-        <div class="search">
-          <input id="searchInput" placeholder="Buscar anime..." />
-          <span class="search-icon">🔎</span>
-        </div>
-      </div>
-    </header>
+  <div class="announcement">📥 Modo offline pelo Telegram • Baixe, salve e assista sem depender da internet</div>
 
-    <section class="hero" id="hero">
-      <img class="hero-bg" id="heroBg" src="" alt="">
-      <div class="hero-content">
-        <div class="hero-kicker" id="heroKicker">DESTAQUE</div>
-        <h1 class="hero-title" id="heroTitle">Carregando...</h1>
-        <div class="hero-meta" id="heroMeta">Preparando catálogo</div>
-        <div class="hero-desc" id="heroDesc">Aguarde.</div>
-        <div class="actions">
-          <button class="btn btn-primary" id="heroWatch">▶ Assistir</button>
-          <button class="btn btn-secondary" id="heroInfo">Mais informações</button>
+  <div class="nav-wrap">
+    <nav class="container" aria-label="Navegação principal">
+      <a class="brand" href="#top" aria-label="Baltigo Offline, início">
+        <span class="brand-mark">B</span>
+        <span>Baltigo <em>Offline</em></span>
+      </a>
+      <div class="nav-links">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#beneficios">Benefícios</a>
+        <a href="#planos">Planos</a>
+        <a href="#faq">Dúvidas</a>
+        <a class="btn btn-primary btn-sm nav-cta" href="#planos">Ver planos</a>
+      </div>
+    </nav>
+  </div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="pulse"></span> Entretenimento que vai com você</div>
+          <h1>Baixe uma vez.<br><span class="gradient">Assista onde quiser.</span></h1>
+          <p class="hero-copy">Leve seus animes, séries e filmes para onde a internet não chega. Baixe pelo Telegram, salve no seu dispositivo e assista no trabalho, na viagem, no ônibus, na TV ou onde você preferir.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#planos">🔥 Quero assistir offline</a>
+            <a class="btn btn-secondary" href="#como-funciona">▶ Ver como funciona</a>
+          </div>
+          <div class="trust-row">
+            <span><i>✓</i> Downloads sem limite</span>
+            <span><i>✓</i> Melhor qualidade disponível</span>
+            <span><i>✓</i> Dublado e legendado</span>
+            <span><i>✓</i> Sem limite de dispositivos</span>
+          </div>
+        </div>
+
+        <div class="device-stage" aria-label="Demonstração visual do Baltigo Offline">
+          <div class="device-glow"></div>
+          <div class="float-card float-one">⚡ Novo episódio<small>Disponível em até 24h</small></div>
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="phone-top"><span>09:41</span><span>●●● 100%</span></div>
+              <div class="app-head"><div class="app-title">Baltigo <b>Offline</b></div><div class="search-pill">⌕</div></div>
+              <div class="mock-cover"><span class="quality">FHD • MAX</span><span class="offline-tag">OFFLINE</span></div>
+              <div class="episode">
+                <small>Preparando para assistir sem internet</small>
+                <h3>Episódio salvo no dispositivo</h3>
+                <p>Depois de baixar, é só abrir e assistir. Sem depender do sinal.</p>
+              </div>
+              <div class="download-card">
+                <div class="download-head"><span>↓ Download</span><span>88%</span></div>
+                <div class="bar"><span></span></div>
+                <div class="download-meta"><span>Qualidade máxima</span><span>Telegram</span></div>
+              </div>
+              <div class="offline-ready">✓ Pronto para assistir offline</div>
+            </div>
+          </div>
+          <div class="float-card float-two">📺 Leve para a TV<small>Espelhe a tela ou reproduza o arquivo</small></div>
         </div>
       </div>
     </section>
 
-    <div class="status-wrap">
-      <div class="status" id="status">Carregando catálogo...</div>
-    </div>
+    <section class="stats">
+      <div class="container stats-grid">
+        <div class="stat"><strong>155 mil+</strong><span>episódios e conteúdos no acervo combinado</span></div>
+        <div class="stat"><strong>25 mil+</strong><span>episódios de anime, incluindo dublados e legendados</span></div>
+        <div class="stat"><strong>130 mil+</strong><span>episódios e conteúdos entre séries e filmes</span></div>
+        <div class="stat"><strong>&lt; 24h</strong><span>meta de disponibilidade para novos episódios</span></div>
+      </div>
+    </section>
 
-    <div class="toolbar" id="toolbar" style="display:none;">
-      <div class="toolbar-left" id="toolbarLeft"></div>
-      <div id="toolbarRight" class="section-subtitle"></div>
-    </div>
+    <section class="section" id="como-funciona">
+      <div class="container">
+        <span class="section-kicker">Simples de verdade</span>
+        <h2 class="section-title">Do Telegram para o seu bolso.</h2>
+        <p class="section-copy">Nada de depender de Wi‑Fi ruim ou gastar seu pacote de dados o tempo todo. Você escolhe, baixa e leva o conteúdo com você.</p>
 
-    <main class="content" id="app"></main>
-    <div class="footer-space"></div>
-  </div>
+        <div class="steps">
+          <article class="step"><div class="step-icon">🔎</div><h3>1. Escolha o que assistir</h3><p>Encontre animes, séries, filmes, episódios dublados e legendados pelo ecossistema Baltigo no Telegram.</p></article>
+          <article class="step"><div class="step-icon">📥</div><h3>2. Baixe e salve</h3><p>Faça o download na melhor qualidade disponível e mantenha o arquivo no celular, tablet, notebook ou outro dispositivo.</p></article>
+          <article class="step"><div class="step-icon">✈️</div><h3>3. Assista sem internet</h3><p>Trabalho, estrada, viagem, interior, ônibus ou avião. Depois de salvo, seu episódio não depende da sua conexão.</p></article>
+        </div>
+
+        <div class="usecases-grid">
+          <article class="usecase"><div class="emoji">🏢</div><h3>No trabalho</h3><p>Para intervalos e lugares onde o Wi‑Fi é bloqueado, lento ou simplesmente não existe.</p></article>
+          <article class="usecase"><div class="emoji">🚌</div><h3>Na estrada</h3><p>Baixe antes de sair e continue sua maratona mesmo atravessando áreas sem sinal.</p></article>
+          <article class="usecase"><div class="emoji">📺</div><h3>Na sua TV</h3><p>Espelhe a tela ou reproduza arquivos compatíveis em outros dispositivos.</p></article>
+          <article class="usecase"><div class="emoji">📱</div><h3>Em qualquer tela</h3><p>Sem limite de dispositivos para você organizar seus downloads nos aparelhos que usa.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="beneficios">
+      <div class="container">
+        <span class="section-kicker">Muito além do download</span>
+        <h2 class="section-title">Uma assinatura para quem realmente assiste.</h2>
+        <p class="section-copy">O Baltigo Offline foi pensado para reduzir fricção: mais catálogo, mais liberdade, melhor qualidade e novidades entrando continuamente.</p>
+
+        <div class="benefits-wrap">
+          <article class="benefit-main">
+            <div>
+              <div class="benefit-icon">∞</div>
+              <h3>Baixe sem ficar contando limite.</h3>
+              <p>Organize sua própria biblioteca offline nos seus dispositivos. Baixe episódios para uma viagem inteira, uma temporada completa ou só o que pretende ver hoje.</p>
+            </div>
+            <div class="chip-row">
+              <span class="chip">Downloads ilimitados</span>
+              <span class="chip">Sem limite de aparelhos</span>
+              <span class="chip">Qualidade máxima</span>
+              <span class="chip">Dublado</span>
+              <span class="chip">Legendado</span>
+              <span class="chip">Telegram</span>
+            </div>
+          </article>
+          <div class="benefit-stack">
+            <article><div class="benefit-icon">⚡</div><h3>Atualização automática</h3><p>Saiu episódio novo? A meta é disponibilizá-lo em menos de 24 horas, sem você precisar ficar caçando em vários lugares.</p></article>
+            <article><div class="benefit-icon">👑</div><h3>Pedidos prioritários</h3><p>Ouro e Diamante podem solicitar títulos e episódios sem limite de pedidos. Esses pedidos entram com prioridade. O plano Bronze não inclui esse benefício.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section pricing-section" id="planos">
+      <div class="container">
+        <div class="pricing-intro">
+          <div>
+            <span class="section-kicker">Escolha seu acesso</span>
+            <h2 class="section-title">Começa por R$ 7,90.</h2>
+            <p class="section-copy">Todos os planos liberam o mesmo catálogo e o modo offline. O que muda é o período de acesso — e o Bronze não inclui pedidos prioritários.</p>
+          </div>
+          <div class="pricing-note">💡 Os botões de pagamento já estão preparados. Basta inserir os seus links de checkout no bloco de configuração no final do arquivo.</div>
+        </div>
+
+        <div class="plans">
+          <article class="plan">
+            <div class="plan-tier"><div class="tier-icon">🥉</div></div>
+            <h3>Bronze Semanal</h3><div class="plan-duration">7 dias de acesso</div>
+            <div class="price"><span class="currency">R$</span><strong>7,90</strong><small>/ 7 dias</small></div>
+            <ul>
+              <li>Catálogo completo</li><li>Downloads ilimitados</li><li>Melhor qualidade disponível</li><li>Dublado e legendado</li><li>Sem limite de dispositivos</li><li>Atualizações automáticas</li><li class="no">Pedidos prioritários</li>
+            </ul>
+            <a class="btn btn-secondary checkout" href="#" data-plan="bronze">Começar por R$ 7,90</a>
+            <div class="plan-foot">Link de checkout pendente</div>
+          </article>
+
+          <article class="plan featured">
+            <span class="badge">Ótimo para começar</span>
+            <div class="plan-tier"><div class="tier-icon">🥇</div></div>
+            <h3>Ouro Mensal</h3><div class="plan-duration">30 dias de acesso</div>
+            <div class="price"><span class="currency">R$</span><strong>17,90</strong><small>/ 30 dias</small></div>
+            <ul>
+              <li>Catálogo completo</li><li>Downloads ilimitados</li><li>Melhor qualidade disponível</li><li>Dublado e legendado</li><li>Sem limite de dispositivos</li><li>Atualizações automáticas</li><li>Pedidos prioritários ilimitados</li>
+            </ul>
+            <a class="btn btn-primary checkout" href="#" data-plan="ouro">Assinar Ouro</a>
+            <div class="plan-foot">Link de checkout pendente</div>
+          </article>
+
+          <article class="plan">
+            <div class="plan-tier"><div class="tier-icon">💎</div></div>
+            <h3>Diamante Anual</h3><div class="plan-duration">365 dias de acesso</div>
+            <div class="price"><span class="currency">R$</span><strong>79,90</strong><small>/ ano</small></div>
+            <ul>
+              <li>Catálogo completo</li><li>Downloads ilimitados</li><li>Melhor qualidade disponível</li><li>Dublado e legendado</li><li>Sem limite de dispositivos</li><li>Atualizações automáticas</li><li>Pedidos prioritários ilimitados</li>
+            </ul>
+            <a class="btn btn-secondary checkout" href="#" data-plan="anual">Assinar Diamante</a>
+            <div class="plan-foot">Link de checkout pendente</div>
+          </article>
+
+          <article class="plan lifetime">
+            <span class="badge">Sem vencimento</span>
+            <div class="plan-tier"><div class="tier-icon">♾️</div></div>
+            <h3>Diamante Vitalício</h3><div class="plan-duration">Acesso vitalício</div>
+            <div class="price"><span class="currency">R$</span><strong>249,90</strong><small>/ uma vez</small></div>
+            <ul>
+              <li>Catálogo completo</li><li>Downloads ilimitados</li><li>Melhor qualidade disponível</li><li>Dublado e legendado</li><li>Sem limite de dispositivos</li><li>Novidades e atualizações</li><li>Pedidos prioritários ilimitados</li>
+            </ul>
+            <a class="btn btn-secondary checkout" href="#" data-plan="vitalicio">Quero acesso vitalício</a>
+            <div class="plan-foot">Link de checkout pendente</div>
+          </article>
+        </div>
+
+        <div class="coxinha">
+          <div class="coxinha-copy"><div class="coxinha-emoji">🥟</div><div><strong>O preço de uma coxinha. Sete dias de entretenimento.</strong><span>Por R$ 7,90 você testa o Baltigo Offline por uma semana inteira e decide se faz sentido para a sua rotina.</span></div></div>
+          <a class="btn btn-primary checkout" href="#" data-plan="bronze">Testar por R$ 7,90</a>
+        </div>
+
+        <div class="compare" aria-label="Comparação dos planos">
+          <table>
+            <thead><tr><th>Benefício</th><th>Bronze</th><th>Ouro</th><th>Diamante Anual</th><th>Vitalício</th></tr></thead>
+            <tbody>
+              <tr><td>Acesso ao catálogo</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+              <tr><td>Downloads ilimitados</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+              <tr><td>Qualidade máxima disponível</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+              <tr><td>Sem limite de dispositivos</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+              <tr><td>Pedidos prioritários ilimitados</td><td class="nope">—</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+              <tr><td>Período</td><td>7 dias</td><td>30 dias</td><td>365 dias</td><td>Vitalício</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div style="text-align:center; max-width:760px; margin:0 auto;">
+          <span class="section-kicker">Sem dúvida escondida</span>
+          <h2 class="section-title">Perguntas frequentes.</h2>
+          <p class="section-copy" style="margin-inline:auto;">Tudo o que alguém precisa saber antes de assinar.</p>
+        </div>
+
+        <div class="faq">
+          <div class="faq-item open"><button class="faq-q"><span>O que é o Baltigo Offline?</span><span>+</span></button><div class="faq-a"><div><p>É o modo de acesso da Baltigo voltado para quem quer baixar animes, séries e filmes pelo Telegram, salvar nos próprios dispositivos e assistir depois sem depender de conexão com a internet.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Preciso de internet para assistir?</span><span>+</span></button><div class="faq-a"><div><p>Você precisa de internet para localizar e baixar o arquivo. Depois que o conteúdo estiver salvo no dispositivo, pode reproduzi-lo offline.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Funciona em Android, iPhone, PC e TV?</span><span>+</span></button><div class="faq-a"><div><p>O acesso principal é pelo Telegram, disponível em celular e computador. Arquivos baixados podem ser reproduzidos em dispositivos compatíveis e você também pode usar recursos de espelhamento para a TV quando o aparelho permitir.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Qual qualidade dos episódios?</span><span>+</span></button><div class="faq-a"><div><p>A prioridade é disponibilizar a melhor qualidade existente para aquele arquivo. A resolução final varia de acordo com a fonte e o lançamento específico.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Tem conteúdo dublado e legendado?</span><span>+</span></button><div class="faq-a"><div><p>Sim. O catálogo reúne opções dubladas e legendadas quando disponíveis, tanto para animes quanto para outras produções.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Quantos aparelhos posso usar?</span><span>+</span></button><div class="faq-a"><div><p>Não há limite de dispositivos informado para organizar e reproduzir seus downloads. A compatibilidade de cada arquivo depende do dispositivo e do aplicativo usado para reprodução.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Posso pedir uma série, anime, filme ou episódio?</span><span>+</span></button><div class="faq-a"><div><p>Nos planos Ouro e Diamante, sim: os pedidos são ilimitados e entram como prioritários. O plano Bronze não inclui pedidos prioritários.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Quando um episódio novo entra no catálogo?</span><span>+</span></button><div class="faq-a"><div><p>O sistema é atualizado continuamente. A meta é que um episódio recém-lançado esteja disponível em menos de 24 horas, quando o arquivo estiver disponível para inclusão.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>O plano vitalício expira?</span><span>+</span></button><div class="faq-a"><div><p>Não. O Diamante Vitalício é vendido como acesso sem prazo de expiração ao Baltigo Offline, conforme as condições apresentadas no momento da compra.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>O que acontece quando meu plano por período termina?</span><span>+</span></button><div class="faq-a"><div><p>O acesso online da assinatura segue o período contratado. As condições de renovação serão apresentadas no checkout. Arquivos que já estejam salvos localmente continuam sujeitos ao funcionamento e às regras do dispositivo onde foram armazenados.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Existe conteúdo para maiores de 18 anos?</span><span>+</span></button><div class="faq-a"><div><p>Algumas categorias podem conter conteúdo adulto. Quando disponibilizadas, são destinadas exclusivamente a maiores de 18 anos e devem respeitar as regras aplicáveis ao serviço e à plataforma utilizada.</p></div></div></div>
+          <div class="faq-item"><button class="faq-q"><span>Como recebo ajuda?</span><span>+</span></button><div class="faq-a"><div><p>Use o botão de suporte no final da página. Ele pode ser configurado para abrir diretamente o atendimento oficial da Baltigo no Telegram.</p></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:34px;">
+      <div class="container">
+        <div class="final-cta">
+          <div><h2>Internet acabou.<br>Sua maratona não precisa acabar.</h2><p>Escolha seu plano, baixe o que quer assistir e leve a Baltigo com você.</p></div>
+          <div class="final-actions"><a class="btn btn-primary" href="#planos">Ver planos</a><a class="btn btn-secondary" id="supportLink" href="https://t.me/QGSuporteBot" target="_blank" rel="noopener">Falar com suporte</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div class="legal"><div class="brand" style="margin-bottom:13px;"><span class="brand-mark">B</span><span>Baltigo <em>Offline</em></span></div><div>© <span id="year"></span> Baltigo. O catálogo, disponibilidade, resolução e prazos podem variar. A Baltigo deve disponibilizar apenas conteúdos para os quais possua autorização, licença ou outro fundamento jurídico aplicável. Conteúdos classificados como adultos são destinados exclusivamente a maiores de 18 anos.</div></div>
+      <div class="footer-links"><a href="#planos">Planos</a><a href="#faq">FAQ</a><a href="https://t.me/QGSuporteBot" target="_blank" rel="noopener">Suporte</a></div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><div>🔗</div><div><strong>Checkout ainda não configurado</strong><span>Substitua o link deste plano no objeto CONFIG.checkout no final do arquivo.</span></div></div>
 
   <script>
-    const API = "https://bot-production-1980.up.railway.app/";
-    const cache = new Map();
+    // ===== CONFIGURAÇÃO RÁPIDA =====
+    // Cole os links reais de checkout entre as aspas.
+    const CONFIG = {
+      checkout: {
+        bronze: "",
+        ouro: "",
+        anual: "",
+        vitalicio: ""
+      },
+      support: "https://t.me/QGSuporteBot"
+    };
 
-    const app = document.getElementById("app");
-    const statusEl = document.getElementById("status");
-    const heroBg = document.getElementById("heroBg");
-    const heroTitle = document.getElementById("heroTitle");
-    const heroMeta = document.getElementById("heroMeta");
-    const heroDesc = document.getElementById("heroDesc");
-    const heroKicker = document.getElementById("heroKicker");
-    const heroWatch = document.getElementById("heroWatch");
-    const heroInfo = document.getElementById("heroInfo");
-    const searchInput = document.getElementById("searchInput");
-    const toolbar = document.getElementById("toolbar");
-    const toolbarLeft = document.getElementById("toolbarLeft");
-    const toolbarRight = document.getElementById("toolbarRight");
-
-    let currentSection = "dublados";
-    let currentPage = 1;
-    let currentSearch = "";
-    let currentMode = "home";
-    let currentController = null;
-    let activeRequestId = 0;
-    let autoplayTimer = null;
-
-    function safe(v, fallback = "") {
-      return (v ?? fallback ?? "").toString().trim();
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    function showToast() {
+      clearTimeout(toastTimer);
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3600);
     }
 
-    function escapeAttr(v) {
-      return safe(v).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#39;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    }
-
-    function isMobileLike() {
-      return window.matchMedia("(max-width: 720px)").matches;
-    }
-
-    function poster(item) {
-      return item?.cover_url || item?.banner_url || "https://placehold.co/600x900/181820/ffffff?text=Anime";
-    }
-
-    function banner(item) {
-      return item?.banner_url || item?.cover_url || "https://placehold.co/1280x720/181820/ffffff?text=Anime";
-    }
-
-    function numberOrNA(value) {
-      return value === null || value === undefined || value === "" ? "N/A" : value;
-    }
-
-    function getHistory() {
-      return JSON.parse(localStorage.getItem("qg_baltigo_history") || "[]");
-    }
-
-    function saveHistory(entry) {
-      const list = getHistory().filter(x => !(x.id === entry.id && x.episode === entry.episode));
-      list.unshift(entry);
-      localStorage.setItem("qg_baltigo_history", JSON.stringify(list.slice(0, 30)));
-    }
-
-    function skeletonRow(count = 6) {
-      return `
-        <div class="skeleton-row">
-          ${Array.from({ length: count }).map(() => `
-            <div class="skeleton-card">
-              <div class="skeleton-poster"></div>
-              <div class="skeleton-lines">
-                <div class="skeleton-line"></div>
-                <div class="skeleton-line short"></div>
-              </div>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    }
-
-    async function getJson(url, { abortPrevious = false } = {}) {
-      if (cache.has(url)) return cache.get(url);
-
-      const requestId = ++activeRequestId;
-      let controller = null;
-
-      if (abortPrevious) {
-        if (currentController) currentController.abort();
-        controller = new AbortController();
-        currentController = controller;
-      }
-
-      const res = await fetch(url, controller ? { signal: controller.signal } : {});
-      if (!res.ok) throw new Error(`Falha ${res.status} em ${url}`);
-      const data = await res.json();
-
-      if (requestId === activeRequestId) {
-        cache.set(url, data);
-      }
-      return data;
-    }
-
-    async function prefetchJson(url) {
-      if (cache.has(url)) return;
-      try {
-        const res = await fetch(url);
-        if (!res.ok) return;
-        const data = await res.json();
-        cache.set(url, data);
-      } catch (_) {}
-    }
-
-    function setStatus(text) {
-      statusEl.textContent = text || "";
-    }
-
-    function showToolbar(show, leftHtml = "", rightText = "") {
-      toolbar.style.display = show ? "flex" : "none";
-      toolbarLeft.innerHTML = leftHtml;
-      toolbarRight.textContent = rightText;
-    }
-
-    function setHero(item, kicker = "DESTAQUE") {
-      if (!item) return;
-      const heroSrc = banner(item);
-      heroBg.src = heroSrc;
-      heroBg.onerror = () => {
-        heroBg.src = poster(item);
-      };
-      heroTitle.textContent = safe(item.title, "Anime");
-      heroKicker.textContent = kicker;
-
-      const meta = [];
-      if (item.prefix) meta.push(item.prefix);
-      if (item.status) meta.push(item.status);
-      if (item.year) meta.push(item.year);
-      if (item.episodes) meta.push(item.episodes + " eps");
-      if (Array.isArray(item.genres) && item.genres.length) {
-        meta.push(item.genres.slice(0, 3).join(" • "));
-      }
-      heroMeta.textContent = meta.join(" • ") || "QG BALTIGO";
-      heroDesc.textContent = safe(item.description, "Explore o catálogo.").slice(0, isMobileLike() ? 140 : 220);
-      heroWatch.onclick = () => openAnime(item.id);
-      heroInfo.onclick = () => openAnime(item.id);
-    }
-
-    function renderCard(item, rowMode = false) {
-      const isDub = !!item.is_dubbed || item.prefix === "DUB";
-      const badgeClass = isDub ? "badge badge-dub" : "badge badge-leg";
-      const badgeText = item.prefix || (isDub ? "DUB" : "LEG");
-
-      const sub = [];
-      if (item.year) sub.push(item.year);
-      if (item.status) sub.push(item.status);
-      if (item.episode) sub.push("Ep " + item.episode);
-
-      return `
-        <article class="card ${rowMode ? "card-row" : ""}" onclick="openAnime('${escapeAttr(item.id)}')"
-                 onmouseenter="prefetchAnime('${escapeAttr(item.id)}')">
-          <div class="poster-wrap">
-            <span class="${badgeClass}">${badgeText}</span>
-            <img class="poster" loading="lazy" decoding="async" src="${escapeAttr(poster(item))}" alt="${escapeAttr(safe(item.title))}" onerror="this.src='https://placehold.co/600x900/181820/ffffff?text=Anime'">
-            <div class="poster-overlay"></div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">${safe(item.display_title || item.title, item.id)}</h3>
-            <div class="card-sub">${sub.join(" • ") || "Assistir agora"}</div>
-          </div>
-        </article>
-      `;
-    }
-
-    function renderItemsAdaptive(items) {
-      if (isMobileLike()) {
-        return `<div class="row-scroller">${items.map(item => renderCard(item, true)).join("")}</div>`;
-      }
-      return `<div class="grid">${items.map(item => renderCard(item)).join("")}</div>`;
-    }
-
-    function renderContinueWatching() {
-      const history = getHistory();
-      if (!history.length) return "";
-
-      const items = history.slice(0, 10).map(item => `
-        <article class="card ${isMobileLike() ? "card-row" : ""}" onclick="openEpisode('${escapeAttr(item.id)}', '${escapeAttr(item.episode)}', '${escapeAttr(item.quality || "HD")}')">
-          <div class="poster-wrap">
-            <span class="badge ${item.prefix === 'DUB' ? 'badge-dub' : 'badge-leg'}">${item.prefix || "LEG"}</span>
-            <img class="poster" loading="lazy" decoding="async" src="${escapeAttr(item.cover_url || 'https://placehold.co/600x900/181820/ffffff?text=Anime')}" alt="${escapeAttr(safe(item.title || item.id))}">
-            <div class="poster-overlay"></div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">${safe(item.display_title || item.title || item.id)}</h3>
-            <div class="card-sub">Continuar do episódio ${safe(item.episode)}</div>
-          </div>
-        </article>
-      `).join("");
-
-      return `
-        <section class="section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Continuar assistindo</h2>
-              <div class="section-subtitle">Seu histórico recente</div>
-            </div>
-          </div>
-          ${isMobileLike() ? `<div class="row-scroller">${items}</div>` : `<div class="continue-grid">${items}</div>`}
-        </section>
-      `;
-    }
-
-    function renderPagination(page, totalPages, callback) {
-      if (!totalPages || totalPages <= 1) return "";
-      const parts = [];
-      parts.push(`<button class="page-chip" ${page <= 1 ? "disabled" : ""} onclick="${callback}(${page - 1})">◀</button>`);
-
-      const start = Math.max(1, page - 2);
-      const end = Math.min(totalPages, page + 2);
-
-      if (start > 1) {
-        parts.push(`<button class="page-chip" onclick="${callback}(1)">1</button>`);
-        if (start > 2) parts.push(`<span class="page-chip" style="cursor:default;">…</span>`);
-      }
-
-      for (let i = start; i <= end; i++) {
-        parts.push(`<button class="page-chip ${i === page ? "active" : ""}" onclick="${callback}(${i})">${i}</button>`);
-      }
-
-      if (end < totalPages) {
-        if (end < totalPages - 1) parts.push(`<span class="page-chip" style="cursor:default;">…</span>`);
-        parts.push(`<button class="page-chip" onclick="${callback}(${totalPages})">${totalPages}</button>`);
-      }
-
-      parts.push(`<button class="page-chip" ${page >= totalPages ? "disabled" : ""} onclick="${callback}(${page + 1})">▶</button>`);
-      return `<div class="pagination">${parts.join("")}</div>`;
-    }
-
-    function renderGridPage({ title, subtitle, items, page, totalPages, callbackName }) {
-      if (!items.length) {
-        return `
-          <section class="section">
-            <div class="empty-state">
-              <h2 style="margin-top:0;">Nada encontrado</h2>
-              <p>Não encontramos itens para essa tela.</p>
-            </div>
-          </section>
-        `;
-      }
-
-      return `
-        <section class="section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">${title}</h2>
-              <div class="section-subtitle">${subtitle || ""}</div>
-            </div>
-          </div>
-          ${renderItemsAdaptive(items)}
-          ${renderPagination(page, totalPages, callbackName)}
-        </section>
-      `;
-    }
-
-    function scrollTopSmooth() {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    async function prefetchAnime(animeId) {
-      await prefetchJson(`${API}/api/anime/${encodeURIComponent(animeId)}`);
-    }
-
-    async function prefetchEpisode(animeId, episode, quality = "HD") {
-      await prefetchJson(`${API}/api/anime/${encodeURIComponent(animeId)}/episode/${encodeURIComponent(episode)}?quality=${encodeURIComponent(quality)}`);
-    }
-
-    async function goHome() {
-      currentMode = "home";
-      currentSearch = "";
-      currentPage = 1;
-      clearAutoplay();
-
-      showToolbar(false);
-      setStatus("Carregando home...");
-      app.innerHTML = `
-        <section class="section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Carregando catálogo</h2>
-              <div class="section-subtitle">Preparando a home</div>
-            </div>
-          </div>
-          ${skeletonRow(isMobileLike() ? 4 : 6)}
-        </section>
-      `;
-
-      const data = await getJson(`${API}/api/catalog/home`);
-      const sections = data.sections || [];
-      const first = sections.find(s => s.items && s.items.length)?.items?.[0];
-      if (first) setHero(first, "DESTAQUE");
-
-      app.innerHTML =
-        renderContinueWatching() +
-        sections.map(section => `
-          <section class="section" id="${section.key}">
-            <div class="section-head">
-              <div>
-                <h2 class="section-title">${section.title}</h2>
-                <div class="section-subtitle">Página 1 de ${section.total_pages || 1}</div>
-              </div>
-              <button class="pill" onclick="goSection('${escapeAttr(section.key)}', 1)">Ver lista completa</button>
-            </div>
-            ${renderItemsAdaptive(section.items || [])}
-          </section>
-        `).join("");
-
-      setStatus("Home carregada");
-      scrollTopSmooth();
-    }
-
-    async function goSection(section, page = 1) {
-      currentMode = "section";
-      currentSection = section;
-      currentPage = page;
-      currentSearch = "";
-      clearAutoplay();
-
-      showToolbar(
-        true,
-        `
-          <button class="pill" onclick="goHome()">Home</button>
-          <button class="pill" onclick="goSection('em_lancamento', 1)">Em lançamento</button>
-          <button class="pill" onclick="goSection('atualizados', 1)">Atualizados</button>
-          <button class="pill" onclick="goSection('top', 1)">Top</button>
-          <button class="pill" onclick="goSection('legendados', 1)">Legendados</button>
-          <button class="pill" onclick="goSection('dublados', 1)">Dublados</button>
-        `,
-        `Categoria: ${section.replaceAll("_", " ")}`
-      );
-
-      setStatus("Carregando categoria...");
-      app.innerHTML = `
-        <section class="section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Carregando categoria</h2>
-              <div class="section-subtitle">${section.replaceAll("_", " ")}</div>
-            </div>
-          </div>
-          ${skeletonRow(isMobileLike() ? 4 : 6)}
-        </section>
-      `;
-
-      const data = await getJson(`${API}/api/catalog/list?section=${encodeURIComponent(section)}&page=${page}`);
-      if (data.items && data.items[0]) setHero(data.items[0], data.title || "CATEGORIA");
-
-      app.innerHTML = renderGridPage({
-        title: data.title || section,
-        subtitle: `Página ${data.page || 1} de ${data.total_pages || 1}`,
-        items: data.items || [],
-        page: data.page || 1,
-        totalPages: data.total_pages || 1,
-        callbackName: "changeSectionPage",
-      });
-
-      if (data.has_next) prefetchJson(`${API}/api/catalog/list?section=${encodeURIComponent(section)}&page=${page + 1}`);
-
-      setStatus(`${(data.items || []).length} item(ns) carregados`);
-      scrollTopSmooth();
-    }
-
-    async function doSearch(query, page = 1) {
-      const q = safe(query);
-      if (!q) {
-        await goHome();
-        return;
-      }
-
-      currentMode = "search";
-      currentSearch = q;
-      currentPage = page;
-      clearAutoplay();
-
-      showToolbar(
-        true,
-        `
-          <button class="pill" onclick="goHome()">Home</button>
-          <button class="pill" onclick="clearSearchAndGoHome()">Limpar busca</button>
-        `,
-        `Buscando por: ${q}`
-      );
-
-      setStatus(`Buscando "${q}"...`);
-      app.innerHTML = `
-        <section class="section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Buscando</h2>
-              <div class="section-subtitle">${q}</div>
-            </div>
-          </div>
-          ${skeletonRow(isMobileLike() ? 4 : 6)}
-        </section>
-      `;
-
-      const data = await getJson(`${API}/api/search?q=${encodeURIComponent(q)}&page=${page}`);
-      if (data.items && data.items[0]) setHero(data.items[0], "RESULTADO DA BUSCA");
-
-      app.innerHTML = renderGridPage({
-        title: `Resultados para "${q}"`,
-        subtitle: `${data.count || 0} resultado(s) • página ${data.page || 1} de ${data.total_pages || 1}`,
-        items: data.items || [],
-        page: data.page || 1,
-        totalPages: data.total_pages || 1,
-        callbackName: "changeSearchPage",
-      });
-
-      setStatus(`${data.count || 0} resultado(s)`);
-      scrollTopSmooth();
-    }
-
-    async function openAnime(animeId) {
-      currentMode = "anime";
-      clearAutoplay();
-
-      showToolbar(
-        true,
-        `
-          <button class="pill" onclick="goHome()">Home</button>
-          <button class="pill" onclick="goSection('${escapeAttr(currentSection)}', ${currentPage})">Voltar para lista</button>
-        `,
-        "Abrindo anime"
-      );
-
-      setStatus("Abrindo anime...");
-      app.innerHTML = `
-        <section class="page">
-          ${skeletonRow(isMobileLike() ? 3 : 5)}
-        </section>
-      `;
-
-      const data = await getJson(`${API}/api/anime/${encodeURIComponent(animeId)}`);
-      const item = data.item;
-      const episodes = data.episodes || [];
-
-      setHero(item, item.prefix || (item.is_dubbed ? "DUBLADO" : "ANIME"));
-
-      app.innerHTML = `
-        <section class="page">
-          <div class="anime-layout">
-            <div>
-              <img class="anime-cover" loading="eager" decoding="async" src="${escapeAttr(poster(item))}" alt="${escapeAttr(safe(item.title))}" onerror="this.src='https://placehold.co/600x900/181820/ffffff?text=Anime'">
-            </div>
-            <div>
-              <h1 class="anime-title">${safe(item.display_title || item.title)}</h1>
-
-              <div class="meta-line">
-                ${numberOrNA(item.status)} • ${numberOrNA(item.year)} • ${numberOrNA(item.episodes || episodes.length)} episódios
-                ${item.studio ? " • " + item.studio : ""}
-              </div>
-
-              <div class="desc">${safe(item.description, "Sem descrição.")}</div>
-
-              <div class="info-grid">
-                <div class="info-box">
-                  <div class="info-label">Gêneros</div>
-                  <div class="info-value">${(item.genres || []).join(" • ") || "N/A"}</div>
-                </div>
-                <div class="info-box">
-                  <div class="info-label">Pontuação</div>
-                  <div class="info-value">${numberOrNA(item.score)}</div>
-                </div>
-                <div class="info-box">
-                  <div class="info-label">Studio</div>
-                  <div class="info-value">${safe(item.studio, "N/A")}</div>
-                </div>
-                <div class="info-box">
-                  <div class="info-label">Títulos alternativos</div>
-                  <div class="info-value">${(item.alt_titles || []).slice(0, 4).join(" • ") || "N/A"}</div>
-                </div>
-              </div>
-
-              <div class="actions">
-                <button class="btn btn-primary" onclick="openEpisode('${escapeAttr(item.id)}', '1')">▶ Assistir agora</button>
-                <button class="btn btn-secondary" onclick="goHome()">Voltar</button>
-              </div>
-
-              <h2 style="margin-top:28px;margin-bottom:12px;">Episódios</h2>
-              <div class="episode-strip">
-                ${episodes.map(ep => `
-                  <div class="ep-btn"
-                       onclick="openEpisode('${escapeAttr(item.id)}', '${escapeAttr(ep.episode)}')"
-                       onmouseenter="prefetchEpisode('${escapeAttr(item.id)}', '${escapeAttr(ep.episode)}')">
-                    EP ${safe(ep.episode)}
-                  </div>
-                `).join("")}
-              </div>
-            </div>
-          </div>
-        </section>
-      `;
-
-      prefetchEpisode(item.id, "1");
-      setStatus("Anime carregado");
-      scrollTopSmooth();
-    }
-
-    function clearAutoplay() {
-      if (autoplayTimer) {
-        clearInterval(autoplayTimer);
-        autoplayTimer = null;
-      }
-    }
-
-    function startAutoPlayCountdown(animeId, nextEpisode, quality) {
-      clearAutoplay();
-      if (!nextEpisode) return "";
-
-      const countdownId = `countdown-${Date.now()}`;
-      return `
-        <div class="player-actions" id="autoplayBox" style="display:none;">
-          <div class="player-breadcrumb">
-            Próximo episódio em <span class="countdown" id="${countdownId}">8</span>s
-          </div>
-          <button class="chip" onclick="openEpisode('${escapeAttr(animeId)}', '${escapeAttr(nextEpisode)}', '${escapeAttr(quality)}')">Assistir próximo agora</button>
-        </div>
-      `;
-    }
-
-    function bindAutoPlayToVideoEnd(animeId, nextEpisode, quality) {
-      clearAutoplay();
-      if (!nextEpisode) return;
-
-      const video = document.getElementById("main-video");
-      const autoplayBox = document.getElementById("autoplayBox");
-      const countdownEl = autoplayBox ? autoplayBox.querySelector(".countdown") : null;
-
-      if (!video || !autoplayBox || !countdownEl) return;
-
-      const startCountdown = () => {
-        clearAutoplay();
-        let seconds = 8;
-        autoplayBox.style.display = "flex";
-        countdownEl.textContent = seconds;
-
-        autoplayTimer = setInterval(() => {
-          seconds -= 1;
-          countdownEl.textContent = seconds;
-          if (seconds <= 0) {
-            clearAutoplay();
-            openEpisode(animeId, nextEpisode, quality);
-          }
-        }, 1000);
-      };
-
-      const cancelCountdown = () => {
-        autoplayBox.style.display = "none";
-        clearAutoplay();
-      };
-
-      video.addEventListener("ended", startCountdown, { once: true });
-      video.addEventListener("play", cancelCountdown);
-      video.addEventListener("seeking", cancelCountdown);
-    }
-
-    async function openEpisode(animeId, episode, quality = "HD") {
-      clearAutoplay();
-      currentMode = "player";
-
-      showToolbar(
-        true,
-        `
-          <button class="pill" onclick="openAnime('${escapeAttr(animeId)}')">Lista de episódios</button>
-          <button class="pill" onclick="goHome()">Home</button>
-        `,
-        "Player"
-      );
-
-      setStatus("Abrindo episódio...");
-      app.innerHTML = `
-        <section class="player-wrap">
-          <div class="player-panel">
-            <div class="video-box" style="display:flex;align-items:center;justify-content:center;color:#999;">Preparando player...</div>
-          </div>
-        </section>
-      `;
-
-      const data = await getJson(
-        `${API}/api/anime/${encodeURIComponent(animeId)}/episode/${encodeURIComponent(episode)}?quality=${encodeURIComponent(quality)}`,
-        { abortPrevious: true }
-      );
-      const item = data.item || {};
-      const activeQuality = item.quality || quality;
-
-      const source =
-        item.video ||
-        (item.videos && (item.videos[activeQuality] || item.videos.HD || item.videos.SD)) ||
-        "";
-
-      let playerHtml = "";
-
-      if (!source) {
-        playerHtml = `
-          <div class="empty-state" style="margin:0;border-radius:0;background:#000;height:100%;display:flex;align-items:center;justify-content:center;">
-            Não foi possível carregar o vídeo deste episódio.
-          </div>
-        `;
-      } else if (source.includes("blogger.com/video.g")) {
-        playerHtml = `<iframe src="${escapeAttr(source)}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-      } else if (source.includes(".m3u8")) {
-        playerHtml = `<video id="main-video" controls autoplay playsinline></video>`;
-      } else {
-        playerHtml = `
-          <video id="main-video" controls autoplay playsinline>
-            <source src="${escapeAttr(source)}" type="video/mp4">
-          </video>
-        `;
-      }
-
-      saveHistory({
-        id: animeId,
-        episode,
-        quality: activeQuality,
-        time: Date.now(),
-        title: item.title || animeId,
-        display_title: item.title || animeId,
-        cover_url: item.thumb || "",
-        prefix: "LEG",
-      });
-
-      if (item.next_episode) {
-        prefetchEpisode(animeId, item.next_episode, activeQuality);
-      }
-
-      app.innerHTML = `
-        <section class="player-wrap">
-          <div class="player-header">
-            <div>
-              <h1 class="player-title">${safe(item.title, animeId + " - Episódio " + episode)}</h1>
-              <div class="player-sub">Episódio ${safe(episode)} • Qualidade atual: ${safe(activeQuality)}</div>
-            </div>
-          </div>
-
-          <div class="player-panel">
-            <div class="video-box">${playerHtml}</div>
-          </div>
-
-          <div class="player-meta">
-            <div class="meta-card">
-              <div class="meta-label">Descrição</div>
-              <div class="meta-text">${safe(item.description, "Sem descrição disponível para este episódio.")}</div>
-            </div>
-
-            <div class="meta-card">
-              <div class="meta-label">Resumo</div>
-              <div class="meta-text">
-                Total de episódios: ${item.total_episodes || "N/A"}<br>
-                Episódio atual: ${safe(episode)}
-              </div>
-            </div>
-          </div>
-
-          <div class="controls-card">
-            <div class="controls-title">Qualidade</div>
-            <div class="quality-row">
-              ${(item.available_qualities || []).map(q => `
-                <button class="chip ${q === activeQuality ? "active" : ""}" onclick="openEpisode('${escapeAttr(animeId)}', '${escapeAttr(episode)}', '${escapeAttr(q)}')">${safe(q)}</button>
-              `).join("")}
-            </div>
-
-            <div class="controls-title" style="margin-top:16px;">Navegação</div>
-            <div class="nav-ep">
-              ${item.prev_episode ? `<button class="chip ghost" onclick="openEpisode('${escapeAttr(animeId)}', '${escapeAttr(item.prev_episode)}', '${escapeAttr(activeQuality)}')">◀ Episódio ${safe(item.prev_episode)}</button>` : ""}
-              ${item.next_episode ? `<button class="chip ghost" onclick="openEpisode('${escapeAttr(animeId)}', '${escapeAttr(item.next_episode)}', '${escapeAttr(activeQuality)}')">Episódio ${safe(item.next_episode)} ▶</button>` : ""}
-              <button class="chip" onclick="openAnime('${escapeAttr(animeId)}')">Lista de episódios</button>
-              <button class="chip" onclick="goHome()">Home</button>
-            </div>
-          </div>
-
-          ${!source || source.includes("blogger.com/video.g") ? "" : startAutoPlayCountdown(animeId, item.next_episode, activeQuality)}
-        </section>
-      `;
-
-      if (source.includes(".m3u8")) {
-        if (!window.Hls) {
-          const script = document.createElement("script");
-          script.src = "https://cdn.jsdelivr.net/npm/hls.js@latest";
-          script.onload = () => {
-            const video = document.getElementById("main-video");
-            if (!video) return;
-            if (window.Hls.isSupported()) {
-              const hls = new Hls();
-              hls.loadSource(source);
-              hls.attachMedia(video);
-            } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-              video.src = source;
-            }
-          };
-          document.body.appendChild(script);
-        } else {
-          const video = document.getElementById("main-video");
-          if (video) {
-            if (window.Hls.isSupported()) {
-              const hls = new Hls();
-              hls.loadSource(source);
-              hls.attachMedia(video);
-            } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-              video.src = source;
-            }
-          }
+    document.querySelectorAll('.checkout').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const plan = button.dataset.plan;
+        const url = CONFIG.checkout[plan];
+        if (!url) {
+          event.preventDefault();
+          showToast();
+          return;
         }
-      }
-
-      bindAutoPlayToVideoEnd(animeId, item.next_episode, activeQuality);
-      setStatus("Episódio carregado");
-      scrollTopSmooth();
-    }
-
-    function changeSectionPage(page) {
-      goSection(currentSection, page);
-    }
-
-    function changeSearchPage(page) {
-      doSearch(currentSearch, page);
-    }
-
-    function clearSearchAndGoHome() {
-      searchInput.value = "";
-      goHome();
-    }
-
-    searchInput.addEventListener("keypress", async (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        await doSearch(e.target.value, 1);
-      }
+        button.href = url;
+      });
     });
 
-    window.addEventListener("resize", () => {
-      if (currentMode === "home") {
-        goHome().catch(() => {});
-      }
+    document.querySelectorAll('.faq-q').forEach((button) => {
+      button.addEventListener('click', () => {
+        button.closest('.faq-item').classList.toggle('open');
+      });
     });
 
-    window.goHome = goHome;
-    window.goSection = goSection;
-    window.openAnime = openAnime;
-    window.openEpisode = openEpisode;
-    window.changeSectionPage = changeSectionPage;
-    window.changeSearchPage = changeSearchPage;
-    window.clearSearchAndGoHome = clearSearchAndGoHome;
-    window.prefetchAnime = prefetchAnime;
-    window.prefetchEpisode = prefetchEpisode;
-
-    goHome().catch(err => {
-      console.error(err);
-      setStatus("Erro ao carregar");
-      heroTitle.textContent = "Erro ao carregar";
-      heroMeta.textContent = "Verifique a API";
-      heroDesc.textContent = err.message || "Falha inesperada";
-    });
+    document.getElementById('supportLink').href = CONFIG.support;
+    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
